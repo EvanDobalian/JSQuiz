@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script class=javascript/text></script>
+    <title>JS Quiz</title>
+</head>
+
+<body>
+    <div class="jumbotron">
+        <h1 class="text-center">Javascript Quiz</h1>
+        <div class="container">
+            <div id="high-scores-btn" style = "cursor: pointer;">High Scores</div>
+            <div id="timer">Time: <span id="counter"></span></div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <h2 id="question" class="text-center">Press start to begin!</h2>
+        <br>
+        <div id="name-form">
+            <form class="form-inline">
+                <div class="form-group mx-sm-3 mb-2">
+                    <input type="text" class="form-control" id="initials">
+                </div>
+                <button id="submit-btn" type="submit" class="btn btn-primary mb-2">Submit</button>
+            </form>
+        </div>
+        <br>
+
+        <div id="high-scores-list"></div>
+        <br>
+
+        <div id="start" class="text-center"><button class="startBtn"><strong>Start</strong></button></div>
+
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-2">
+                <button id="answer-one" class="answerBtn" value="1"></button>
+            </div>
+            <div class="col-2">
+                <button id="answer-two" class="answerBtn" value="2"></button>
+            </div>
+            <div class="col-4"></div>
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-2">
+                <button id="answer-three" class="answerBtn" value="3"></button>
+            </div>
+            <div class="col-2">
+                <button id="answer-four" class="answerBtn" value="4"></button>
+            </div>
+            <div class="col-4"></div>
+        </div>
+        <br>
+        <div id="answer-text" class="text-center"></div>
+    </div>
+
+    <script type="text/javascript">
+        let questionText = $("#question");
+        let startBtn = $("#start");
+        let a1 = $("#answer-one");
+        let a2 = $("#answer-two");
+        let a3 = $("#answer-three");
+        let a4 = $("#answer-four");
+        let answerText = $("#answer-text");
+        let counter = $("#counter");
+        let highScores = $("#high-scores-list");
+        let highScoresBtn = $("#high-scores-btn");
+        let submitBtn = $("#submit-btn");
+        let state = "running";
+        let rightAns = 0;
+        let totalQuestions = 10;
+        let time = 100;
+        let qNum = 0;
+        let questions = {
+            //q[num]: ["question", "answer1", "answer2", "answer3", "answer4", "correctAnswer"],
+            '0': ["How do you create a variable?", "variable.new('variableName')", "let 'variableName'", "var 'variableName'", "B and C", "4"],
+            '1': ["Which function appends its argument to the end of an array?", "push()", "append()", "toEnd()", "concat()", "1"],
+            '2': ["What element should you write your JavaScript code in?", "<javascript>", "<script>", "<js>", "Any element", "2"],
+            '3': ["What variable type is used to store true and false values?", "boolean", "global", "local", "string", "1"],
+            '4': ["How would you print the contents of the variable 'food' to the console?", "console(food)", "console('food')", "console.log('food')", "console.log(food)", "4"],
+            '5': ["How do you access a specific index of the array 'movies'?", "movies(n)", "movies{n}", "movies[n]", "all of the above", "3"],
+            '6': ["How do you create a new function?", "function = myFunction()", "myFunction()", "function myFunction()", "all of the above", "3"],
+            '7': ["What type of variable takes precedent over others of the same name?", "global", "local", "neither A nor B", "both A and B", "2"],
+            '8': ["Which function converts a string to all lower case characters?", "toLowerCase()", "toString()", "toSubString()", "toLower()", "1"],
+            '9': ["Which is an advantage that javascript provides?", "more interactivity", "less interaction with server", "dynamic document", "all of the above", "4"],
+        }
+
+        $(document).ready(function () {
+
+            startBtn.on("click", function () {
+                state = "running";
+                rightAns = 0;
+                time = 100;
+                qNum = 0;
+                document.getElementById("start").style.display = "none"; //Hide start button
+                onSecond();
+
+                nextQuestion(questions);
+                document.getElementById("high-scores-list").style.display = "none";
+                document.getElementById("answer-one").style.display = "block";
+                document.getElementById("answer-two").style.display = "block";
+                document.getElementById("answer-three").style.display = "block";
+                document.getElementById("answer-four").style.display = "block";
+            });
+
+            a1.on("click", function () {
+                answer = this.value;
+                answerBtn(questions);
+            })
+            a2.on("click", function () {
+                answer = this.value;
+                answerBtn(questions);
+            })
+            a3.on("click", function () {
+                answer = this.value;
+                answerBtn(questions);
+            })
+            a4.on("click", function () {
+                answer = this.value;
+                answerBtn(questions);
+            })
+        });
+
+        highScoresBtn.on("click", function() { //show high scores
+            state = "stopped"
+                time = 0;
+                document.getElementById("answer-one").style.display = "none";
+                document.getElementById("answer-two").style.display = "none";
+                document.getElementById("answer-three").style.display = "none";
+                document.getElementById("answer-four").style.display = "none";
+                document.getElementById("name-form").style.display = "none";
+                document.getElementById("high-scores-list").style.display = "block";
+                document.getElementById("start").style.display = "block";
+                questionText.text("HighScores (Press Start to play)");
+        });
+
+        
+        submitBtn.on("click", function () { //submit results
+                    event.preventDefault();
+                    document.getElementById("name-form").style.display = "none";
+                    document.getElementById("high-scores-list").style.display = "block";
+                    document.getElementById("start").style.display = "block";
+                    questionText.text("HighScores (Press Start to play)");
+
+                    let newScore = $('<div>');
+                    let initials = $('#initials').val();
+                    newScore.text(`${initials}: ${rightAns}`);
+                    highScores.append(newScore);
+                });
+
+        function onSecond() { //Timer
+            if (state === "running") {
+                counter.text(time);
+                if (time > 0) {
+                    time--;
+                }
+                if (time <= 0 && state === "running") {
+                    quizEnd();
+                }
+                setTimeout(onSecond, 1000);
+            }
+        }
+
+        function answerBtn(questions) { //When an answer is chosen
+            if (answer === questions[qNum][5]) {
+                answerText.text("Correct");
+                rightAns++;
+            }
+            else {
+                answerText.text("Incorrect");
+                time -= 5;
+            }
+            qNum++;
+            nextQuestion(questions);
+            quizEnd();
+        }
+
+        function nextQuestion(questions) { //update question and answer fields
+            if (qNum < totalQuestions) {
+                questionText.text(questions[qNum][0]);
+                a1.text(questions[qNum][1]);
+                a2.text(questions[qNum][2]);
+                a3.text(questions[qNum][3]);
+                a4.text(questions[qNum][4]);
+            }
+        }
+
+        function quizEnd() {
+            if (qNum >= totalQuestions || (time <= 0 && state === "running")) {
+                state = "stopped"
+                time = 0;
+                document.getElementById("answer-one").style.display = "none";
+                document.getElementById("answer-two").style.display = "none";
+                document.getElementById("answer-three").style.display = "none";
+                document.getElementById("answer-four").style.display = "none";
+                document.getElementById("name-form").style.display = "block";
+                questionText.text("Enter your initials");
+            }
+        }
+    </script>
+</body>
+
+</html>
